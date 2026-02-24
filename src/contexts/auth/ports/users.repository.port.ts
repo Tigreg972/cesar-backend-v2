@@ -1,8 +1,9 @@
-import type { User } from '../../users/user.entity';
+import { User } from '../../users/user.entity';
 
 export const USERS_REPOSITORY = Symbol('USERS_REPOSITORY');
 
 export interface UsersRepositoryPort {
+  create(arg0: { email: string; username: string; passwordHash: string; role: string; }): unknown;
   findByEmail(email: string): Promise<User | null>;
-  create(user: Partial<User>): Promise<User>;
+  save(user: Partial<User>): Promise<User>;
 }

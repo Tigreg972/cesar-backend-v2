@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Reservation } from '../reservations/reservation.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
@@ -12,6 +13,7 @@ export class User {
   @Column({ length: 120 })
   username: string;
 
+  @Exclude()
   @Column({ name: 'password_hash', length: 255 })
   passwordHash: string;
 
@@ -20,4 +22,7 @@ export class User {
 
   @OneToMany(() => Reservation, (r) => r.createdBy)
   reservationsCreated: Reservation[];
+
+  @Column({ type: 'bigint', default: 0 })
+  permissions: bigint;
 }

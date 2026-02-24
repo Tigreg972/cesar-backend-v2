@@ -1,12 +1,18 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { MailerService } from './core/mailer/mailer.services';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly mailer: MailerService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('test-mail')
+  async testMail() {
+    await this.mailer.sendMail({
+      to: process.env.MAIL_USER!,
+      subject: 'Test CESAR',
+      html: '<h2>Test OK</h2><p>Email envoyé ✅</p>',
+    });
+
+    return { ok: true };
   }
 }

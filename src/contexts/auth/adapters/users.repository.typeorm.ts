@@ -1,21 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { User } from '../../users/user.entity';
-import type { UsersRepositoryPort } from '../ports/users.repository.port';
+import { UsersRepositoryPort } from '../ports/users.repository.port';
 
 @Injectable()
-export class UsersRepositoryTypeOrm implements UsersRepositoryPort {
+export class UsersRepositoryTypeorm implements UsersRepositoryPort {
   constructor(
-    @InjectRepository(User) private readonly repo: Repository<User>,
+    @InjectRepository(User)
+    private readonly repo: Repository<User>,
   ) {}
+  create(arg0: { email: string; username: string; passwordHash: string; role: string; }): unknown {
+    throw new Error('Method not implemented.');
+  }
 
   findByEmail(email: string) {
     return this.repo.findOne({ where: { email } });
   }
 
-  async create(user: Partial<User>) {
-    const entity = this.repo.create(user);
-    return this.repo.save(entity);
+  save(user: Partial<User>) {
+    return this.repo.save(user);
   }
 }

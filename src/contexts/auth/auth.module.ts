@@ -1,33 +1,30 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { User } from '../users/user.entity';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { USERS_REPOSITORY } from './ports/users.repository.port';
-import { UsersRepositoryTypeOrm } from './adapters/users.repository.typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { JwtStrategy } from './jwt.strategy';
+import { User } from '../users/user.entity';
+import { MailerModule } from '../../core/mailer/mailer.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
+    ConfigModule,
+    UsersModule,
+    MailerModule,
     TypeOrmModule.forFeature([User]),
-
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET') || 'dev-secret',
-        signOptions: {
-          expiresIn: Number(config.get<string>('JWT_EXPIRES_IN') || 3600), // ✅ number
-        },
+        secret: config.get<string>('JWT_SECRET') || 'super_secret',
+        signOptions: { expiresIn: 3600 }, // number = évite erreur TS
       }),
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    { provide: USERS_REPOSITORY, useClass: UsersRepositoryTypeOrm },
-  ],
-  exports: [AuthService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

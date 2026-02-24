@@ -1,5 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Reservation } from '../reservations/reservation.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('classes')
 export class SchoolClass {
@@ -11,7 +10,4 @@ export class SchoolClass {
 
   @Column({ length: 30, default: 'unknown' })
   level: string;
-
-  @OneToMany(() => Reservation, (r) => r.schoolClass)
-  reservations: Reservation[];
 }

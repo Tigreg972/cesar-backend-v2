@@ -1,29 +1,36 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
-  console.log(' bootstrap() start');
-
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: true,
-    credentials: true,
-  });
-
+  // ✅ Validation + DTO
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      transform: true,
       forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
-  const port = Number(process.env.PORT ?? 4000);
-  await app.listen(port);
+  // ✅ Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Cesar Backend')
+    .setDescription('API documentation')
+    .setVersion('1.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'access-token',
+    )
+    .build();
 
-  console.log(` API running on http://localhost:${port}`);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(process.env.PORT ?? 4000);
+  console.log(`API running on http://localhost:${process.env.PORT ?? 4000}`);
+  console.log(`Swagger on http://localhost:${process.env.PORT ?? 4000}/api`);
 }
-
 bootstrap();

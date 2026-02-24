@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Index } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Room } from '../rooms/room.entity';
 import { SchoolClass } from '../classes/school-class.entity';
 import { User } from '../users/user.entity';
@@ -16,15 +16,15 @@ export class Reservation {
   @Column({ type: 'datetime' })
   endAt: Date;
 
-  @ManyToOne(() => SchoolClass, (c) => c.reservations, { eager: true })
-  schoolClass: SchoolClass;
-
-  @ManyToOne(() => Room, (r) => r.reservations, { eager: true })
-  room: Room;
-
-  @ManyToOne(() => User, { eager: true })
-  createdBy: User;
-
   @Column({ default: 'confirmed' })
   status: 'confirmed' | 'cancelled';
+
+  @ManyToOne(() => SchoolClass, { eager: true, nullable: true })
+  schoolClass?: SchoolClass;
+
+  @ManyToOne(() => Room, { eager: true, nullable: true })
+  room?: Room;
+
+  @ManyToOne(() => User, (u) => u.reservationsCreated, { eager: true, nullable: true })
+  createdBy?: User;
 }
